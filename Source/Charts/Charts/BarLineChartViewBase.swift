@@ -188,13 +188,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         {
             rightYAxisRenderer.computeAxis(min: rightAxis._axisMinimum, max: rightAxis._axisMaximum, inverted: rightAxis.isInverted)
         }
-        
-        if _xAxis.isEnabled
-        {
-            xAxisRenderer.computeAxis(min: _xAxis._axisMinimum, max: _xAxis._axisMaximum, inverted: false)
-        }
-        
-        xAxisRenderer.renderAxisLine(context: context)
+
         leftYAxisRenderer.renderAxisLine(context: context)
         rightYAxisRenderer.renderAxisLine(context: context)
 
@@ -232,23 +226,27 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         context.restoreGState()
         
         renderer.drawExtras(context: context)
-        
-        if _xAxis.isEnabled && !_xAxis.isDrawLimitLinesBehindDataEnabled
+
+        if _xAxis.isEnabled
         {
-            xAxisRenderer.renderLimitLines(context: context)
+            xAxisRenderer.computeAxis(min: _xAxis._axisMinimum, max: _xAxis._axisMaximum, inverted: false)
         }
-        
+
+        xAxisRenderer.renderAxisLine(context: context)
         if leftAxis.isEnabled && !leftAxis.isDrawLimitLinesBehindDataEnabled
         {
             leftYAxisRenderer.renderLimitLines(context: context)
         }
-        
-        if rightAxis.isEnabled && !rightAxis.isDrawLimitLinesBehindDataEnabled
-        {
-            rightYAxisRenderer.renderLimitLines(context: context)
-        }
-        
+
         xAxisRenderer.renderAxisLabels(context: context)
+
+        xAxisRenderer.renderBlocks(context: context)
+        if _xAxis.isEnabled && !_xAxis.isDrawLimitLinesBehindDataEnabled
+        {
+            xAxisRenderer.renderLimitLines(context: context)
+        }
+
+        xAxisRenderer.renderBlockGradients(context: context)
         leftYAxisRenderer.renderAxisLabels(context: context)
         rightYAxisRenderer.renderAxisLabels(context: context)
 
@@ -271,6 +269,36 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         drawDescription(context: context)
         
         drawMarkers(context: context)
+    }
+
+    open func renderBlocking(context: CGContext)
+    {
+        let lineGap: CGFloat = 3.7
+        let lineWidth: CGFloat = 0.5
+
+        context.saveGState()
+        let rect = _viewPortHandler.contentRect
+        let totalDistance = rect.size.width + rect.size.height
+
+        for distance in stride(from: 0, through: totalDistance, by: (lineGap + lineWidth)) {
+
+            let startPoint = CGPoint(x: distance < rect.width ? rect.origin.x + distance : rect.origin.x + rect.width,
+                                     y: distance < rect.width ? rect.origin.y : distance - (rect.width - rect.origin.x))
+
+            let endPoint = CGPoint(x: distance < rect.height ? rect.origin.x : distance - (rect.height - rect.origin.y),
+                                   y: distance < rect.height ?
+                                    rect.origin.y + distance :
+                                    rect.origin.y + rect.height)
+
+            context.move(to: startPoint.applying(getTransformer(forAxis: .left).valueToPixelMatrix))
+            context.addLine(to: endPoint.applying(getTransformer(forAxis: .left).valueToPixelMatrix))
+        }
+
+        context.setStrokeColor(UIColor.black.withAlphaComponent(0.1).cgColor)
+        context.setLineWidth(lineWidth)
+        context.strokePath()
+        context.clip(to: _viewPortHandler.contentRect)
+        context.restoreGState()
     }
     
     private var _autoScaleLastLowestVisibleX: Double?

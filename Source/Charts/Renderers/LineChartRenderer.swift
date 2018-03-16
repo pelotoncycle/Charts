@@ -228,6 +228,7 @@ open class LineChartRenderer: LineRadarRenderer
         }
         
         context.saveGState()
+        defer { context.restoreGState() }
         
         if dataSet.isDrawFilledEnabled
         {
@@ -236,13 +237,14 @@ open class LineChartRenderer: LineRadarRenderer
             
             drawCubicFill(context: context, dataSet: dataSet, spline: fillPath!, matrix: valueToPixelMatrix, bounds: _xBounds)
         }
-        
-        context.beginPath()
-        context.addPath(cubicPath)
-        context.setStrokeColor(drawingColor.cgColor)
-        context.strokePath()
-        
-        context.restoreGState()
+        if dataSet.isDrawLineWithGradientEnabled {
+            drawGradientLine(context: context, dataSet: dataSet, spline: cubicPath, matrix: valueToPixelMatrix)
+        } else {
+            context.beginPath()
+            context.addPath(cubicPath)
+            context.setStrokeColor(drawingColor.cgColor)
+            context.strokePath()
+        }
     }
     
     open func drawCubicFill(
@@ -750,5 +752,26 @@ open class LineChartRenderer: LineRadarRenderer
         }
         
         context.restoreGState()
+    }
+
+    func drawGradientLine(context: CGContext, dataSet: ILineChartDataSet, spline: CGPath, matrix: CGAffineTransform)
+    {
+        context.saveGState()
+        defer { context.restoreGState() }
+
+        let gradientPath = spline.copy(strokingWithWidth: dataSet.lineWidth, lineCap: .square, lineJoin: .miter, miterLimit: 10)
+
+        let gradientStart = CGPoint(x: 0, y: viewPortHandler.contentTop)
+        let gradientEnd = CGPoint(x: 0, y: viewPortHandler.contentBottom)
+        let gradientLocations: [CGFloat] = [0, 1]
+        let gradientColors = dataSet.gradientColors.map { $0.cgColor }
+
+        let baseSpace = CGColorSpaceCreateDeviceRGB()
+        guard let gradient = CGGradient(colorsSpace: baseSpace, colors: gradientColors as CFArray, locations: gradientLocations) else { return }
+
+        context.beginPath()
+        context.addPath(gradientPath)
+        context.clip()
+        context.drawLinearGradient(gradient, start: gradientStart, end: gradientEnd, options: [])
     }
 }

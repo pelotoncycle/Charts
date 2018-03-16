@@ -61,6 +61,8 @@ open class AxisBase: ComponentBase
 
     /// array of limitlines that can be set for the axis
     private var _limitLines = [ChartLimitLine]()
+
+    private var _blocks = [(start: Double, length: Double)]()
     
     /// Are the LimitLines drawn behind the data or in front of the data?
     /// 
@@ -283,6 +285,18 @@ open class AxisBase: ComponentBase
     @objc open func removeAllLimitLines()
     {
         _limitLines.removeAll(keepingCapacity: false)
+    }
+
+    @objc open func addBlock(start: Double, length: Double) {
+        _blocks.append((start: start, length: length))
+    }
+
+    @objc open func removeAllBlocks() {
+        _blocks.removeAll(keepingCapacity: false)
+    }
+
+    open var blocks: [(start: Double, length: Double)] {
+        return _blocks
     }
     
     /// - returns: The LimitLines of this axis.

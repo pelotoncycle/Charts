@@ -337,14 +337,14 @@ open class XAxisRenderer: AxisRendererBase
             context.strokePath()
         }
     }
-    
+
     open override func renderLimitLines(context: CGContext)
     {
         guard
             let xAxis = self.axis as? XAxis,
             let transformer = self.transformer
             else { return }
-        
+
         var limitLines = xAxis.limitLines
         
         if limitLines.count == 0
@@ -381,6 +381,124 @@ open class XAxisRenderer: AxisRendererBase
             renderLimitLineLabel(context: context, limitLine: l, position: position, yOffset: 2.0 + l.yOffset)
         }
     }
+
+
+    open func renderBlocks(context: CGContext) {
+        guard
+            let xAxis = self.axis as? XAxis
+            else { return }
+        for block in xAxis.blocks {
+            renderBlock(context: context, start: block.start, length: block.length)
+        }
+    }
+
+    open func renderBlock(context: CGContext, start: Double, length: Double) {
+        guard
+            let xAxis = self.axis as? XAxis,
+            let transformer = self.transformer
+            else { return }
+
+        context.saveGState()
+        defer { context.restoreGState() }
+
+        let trans = transformer.valueToPixelMatrix
+        let lineGap: CGFloat = 3.7
+        let lineWidth: CGFloat = 0.5
+
+
+        let origin = CGPoint(x: CGFloat(start), y: 0).applying(trans)
+
+        let size = CGSize(width: transformer.pixelForValues(x: length, y: 0).x - transformer.pixelForValues(x: 0, y: 0).x,
+                          height: viewPortHandler.contentBottom - viewPortHandler.contentTop + xAxis.axisLineWidth)
+
+        context.setFillColor(UIColor.white.cgColor)
+
+        let fillRect = CGRect(origin: CGPoint(x: origin.x, y: 0),
+                              size: size)
+
+        let intersection = viewPortHandler.contentRect.intersection(fillRect)
+        let clipBound = intersection.size == .zero ? CGRect.zero : intersection
+        context.clip(to: CGRect(origin: clipBound.origin, size: size))
+        context.fill(fillRect)
+
+        context.beginPath()
+
+        let bounds = fillRect
+        let totalDistance = bounds.size.width + bounds.size.height
+
+        for distance in stride(from: 0, through: totalDistance, by: (lineGap + lineWidth)) {
+
+            let startPoint = CGPoint(x: distance < bounds.width ? bounds.origin.x + distance : bounds.origin.x + bounds.width,
+                                     y: distance < bounds.width ? bounds.origin.y : distance - (bounds.width))
+
+            let endPoint = CGPoint(x: distance < bounds.height ? bounds.origin.x : distance - (bounds.height - bounds.origin.x),
+                                   y: distance < bounds.height ?
+                                    bounds.origin.y + distance :
+                                    bounds.origin.y + bounds.height)
+
+            context.move(to: startPoint)
+            context.addLine(to: endPoint)
+        }
+
+        context.setStrokeColor(UIColor.black.withAlphaComponent(0.1).cgColor)
+        context.setLineWidth(lineWidth)
+        context.strokePath()
+
+        context.move(to: CGPoint(x: fillRect.origin.x, y: fillRect.height - xAxis.axisLineWidth))
+        context.addLine(to: CGPoint(x: fillRect.origin.x + fillRect.width, y: fillRect.height - xAxis.axisLineWidth))
+        context.setStrokeColor(xAxis.axisLineColor.cgColor)
+        context.setLineWidth(xAxis.axisLineWidth)
+        context.setLineDash(phase: 0, lengths: [2, 2])
+        context.strokePath()
+    }
+
+    private func renderBlockGradient(context: CGContext, start: Double, length: Double) {
+        guard
+            let xAxis = self.axis as? XAxis,
+            let transformer = self.transformer
+            else { return }
+
+        context.saveGState()
+        defer { context.restoreGState() }
+
+        let trans = transformer.valueToPixelMatrix
+
+        let origin = CGPoint(x: CGFloat(start), y: 0).applying(trans)
+
+        let size = CGSize(width: transformer.pixelForValues(x: length, y: 0).x - transformer.pixelForValues(x: 0, y: 0).x + 1,
+                          height: viewPortHandler.contentBottom - viewPortHandler.contentTop)
+
+        let fillRect = CGRect(origin: CGPoint(x: origin.x, y: 0),
+                              size: size)
+
+        let intersection = viewPortHandler.contentRect.intersection(fillRect)
+        let clipBound = intersection.size == .zero ? CGRect.zero : intersection
+        context.clip(to: CGRect(origin: CGPoint(x: clipBound.origin.x - 1.5, y: clipBound.origin.y), size: CGSize(width: clipBound.width + 3, height: clipBound.height)))
+
+        let colors = [UIColor.white.cgColor, UIColor.white.withAlphaComponent(0).cgColor]
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let colorLocations: [CGFloat] = [0.0, 1.0]
+        let gradient = CGGradient(colorsSpace: colorSpace,
+                                  colors: colors as CFArray,
+                                  locations: colorLocations)!
+
+        let startPoint = CGPoint.zero
+        let endPoint = CGPoint(x: 0, y: 100)
+
+        context.drawLinearGradient(gradient,
+                                   start: startPoint,
+                                   end: endPoint,
+                                   options: [])
+    }
+
+    open func renderBlockGradients(context: CGContext) {
+        guard
+            let xAxis = self.axis as? XAxis
+            else { return }
+        for block in xAxis.blocks {
+            renderBlockGradient(context: context, start: block.start, length: block.length)
+        }
+    }
     
     @objc open func renderLimitLineLine(context: CGContext, limitLine: ChartLimitLine, position: CGPoint)
     {
@@ -401,6 +519,26 @@ open class XAxisRenderer: AxisRendererBase
         }
         
         context.strokePath()
+        renderBlockGradient(context: context, start: limitLine.limit, length: 0)
+
+        guard let transformer = self.transformer,
+            let image = limitLine.image else { return }
+
+        let size = limitLine.imageSize
+        let xPosition: CGFloat
+        let insect = limitLine.imageInsect
+        let stickyLength = transformer.pixelForValues(x: limitLine.imageStickyLength, y: 0).x - transformer.pixelForValues(x: 0, y: 0).x
+
+        let originX = viewPortHandler.contentRect.origin.x
+        xPosition = max(min(originX + insect.left, position.x + stickyLength - size.width - insect.right), position.x + insect.left)
+        let rect = CGRect(x: xPosition, y: viewPortHandler.contentBottom - size.height - limitLine.imageInsect.bottom, width: size.width, height: size.height)
+
+        if let radialGradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: [UIColor.white.withAlphaComponent(0).cgColor, UIColor.white.cgColor] as CFArray, locations: [0, 1]) {
+            let center = CGPoint(x: rect.origin.x + size.width / 2, y: rect.origin.y + size.height / 2)
+            context.drawRadialGradient(radialGradient, startCenter: center, startRadius: size.width / 2, endCenter: center, endRadius: 1, options: [])
+        }
+
+        image.draw(in: rect)
     }
     
     @objc open func renderLimitLineLabel(context: CGContext, limitLine: ChartLimitLine, position: CGPoint, yOffset: CGFloat)

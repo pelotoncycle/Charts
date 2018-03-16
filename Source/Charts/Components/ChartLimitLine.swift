@@ -40,7 +40,10 @@ open class ChartLimitLine: ComponentBase
     @objc open var drawLabelEnabled = true
     @objc open var label = ""
     @objc open var labelPosition = LabelPosition.rightTop
-    
+    @objc open var image: UIImage?
+    @objc open var imageInsect = UIEdgeInsets.zero
+    @objc open var imageSize = CGSize.zero
+    @objc open var imageStickyLength = Double(0)
     public override init()
     {
         super.init()

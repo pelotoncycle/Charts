@@ -83,7 +83,11 @@ open class LineChartDataSet: LineRadarChartDataSet, ILineChartDataSet
     open var circleHoleRadius = CGFloat(4.0)
     
     open var circleColors = [NSUIColor]()
-    
+
+    open var isDrawLineWithGradientEnabled = false
+
+    open var gradientColors = [NSUIColor]()
+
     /// - returns: The color at the given index of the DataSet's circle-color array.
     /// Performs a IndexOutOfBounds check by modulus.
     open func getCircleColor(atIndex index: Int) -> NSUIColor?
