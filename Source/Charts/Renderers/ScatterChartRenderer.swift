@@ -172,7 +172,7 @@ open class ScatterChartRenderer: LineScatterCandleRadarRenderer
                                 x: pt.x,
                                 y: pt.y - shapeSize - lineHeight),
                             align: .center,
-                            attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: dataSet.valueTextColorAt(j)]
+                            attributes: [.font: valueFont, .foregroundColor: dataSet.valueTextColorAt(j)]
                         )
                     }
                     
