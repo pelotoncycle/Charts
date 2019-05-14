@@ -56,7 +56,7 @@ open class ChartHighlighter : NSObject, IHighlighter
         
         let axis: YAxis.AxisDependency = leftAxisMinDist < rightAxisMinDist ? .left : .right
         
-        let detail = closestSelectionDetailByPixel(closestValues: closestValues, x: x, y: y, axis: axis, minSelectionDistance: chart.maxHighlightDistance)
+        let detail = closestSelectionDetailByPixel(closestValues: closestValues, x: x, y: y, axis: axis, minSelectionDistance: chart.maxHighlightDistance, usingXDistance: chart.useHighlightXDistance)
         
         return detail
     }
@@ -126,7 +126,8 @@ open class ChartHighlighter : NSObject, IHighlighter
         x: CGFloat,
         y: CGFloat,
         axis: YAxis.AxisDependency?,
-        minSelectionDistance: CGFloat) -> Highlight?
+        minSelectionDistance: CGFloat,
+        usingXDistance: Bool) -> Highlight?
     {
         var distance = minSelectionDistance
         var closest: Highlight?
@@ -135,7 +136,7 @@ open class ChartHighlighter : NSObject, IHighlighter
         {
             if axis == nil || high.axis == axis
             {
-                let cDistance = getDistance(x1: x, y1: y, x2: high.xPx, y2: high.yPx)
+                let cDistance = usingXDistance ? getDistance(x1: x, y1: y, x2: high.xPx, y2: high.yPx) : getXDistance(x1: x, x2: high.xPx)
 
                 if cDistance < distance
                 {
@@ -179,6 +180,11 @@ open class ChartHighlighter : NSObject, IHighlighter
     internal func getDistance(x1: CGFloat, y1: CGFloat, x2: CGFloat, y2: CGFloat) -> CGFloat
     {
         return hypot(x1 - x2, y1 - y2)
+    }
+
+    internal func getXDistance(x1: CGFloat, x2: CGFloat) -> CGFloat
+    {
+        return abs(x1 - x2)
     }
     
     internal var data: ChartData?
