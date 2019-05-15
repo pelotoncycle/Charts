@@ -16,10 +16,13 @@ open class ChartHighlighter : NSObject, IHighlighter
 {
     /// instance of the data-provider
     @objc open weak var chart: ChartDataProvider?
+
+    let distanceCalculation: DistanceCalculation
     
-    @objc public init(chart: ChartDataProvider)
+    @objc public init(chart: ChartDataProvider, distanceCalculation: @escaping DistanceCalculation = eucledianDistance)
     {
         self.chart = chart
+        self.distanceCalculation = distanceCalculation
     }
     
     open func getHighlight(x: CGFloat, y: CGFloat) -> Highlight?
@@ -56,7 +59,7 @@ open class ChartHighlighter : NSObject, IHighlighter
         
         let axis: YAxis.AxisDependency = leftAxisMinDist < rightAxisMinDist ? .left : .right
         
-        let detail = closestSelectionDetailByPixel(closestValues: closestValues, x: x, y: y, axis: axis, minSelectionDistance: chart.maxHighlightDistance, usingXDistance: chart.useHighlightXDistance)
+        let detail = closestSelectionDetailByPixel(closestValues: closestValues, x: x, y: y, axis: axis, minSelectionDistance: chart.maxHighlightDistance)
         
         return detail
     }
@@ -126,8 +129,7 @@ open class ChartHighlighter : NSObject, IHighlighter
         x: CGFloat,
         y: CGFloat,
         axis: YAxis.AxisDependency?,
-        minSelectionDistance: CGFloat,
-        usingXDistance: Bool) -> Highlight?
+        minSelectionDistance: CGFloat) -> Highlight?
     {
         var distance = minSelectionDistance
         var closest: Highlight?
@@ -136,7 +138,7 @@ open class ChartHighlighter : NSObject, IHighlighter
         {
             if axis == nil || high.axis == axis
             {
-                let cDistance = usingXDistance ? getXDistance(x1: x, x2: high.xPx) : getDistance(x1: x, y1: y, x2: high.xPx, y2: high.yPx)
+                let cDistance = distanceCalculation(x, y, high.xPx, high.yPx)
 
                 if cDistance < distance
                 {
@@ -175,16 +177,6 @@ open class ChartHighlighter : NSObject, IHighlighter
     internal func getHighlightPos(high: Highlight) -> CGFloat
     {
         return high.yPx
-    }
-    
-    internal func getDistance(x1: CGFloat, y1: CGFloat, x2: CGFloat, y2: CGFloat) -> CGFloat
-    {
-        return hypot(x1 - x2, y1 - y2)
-    }
-
-    internal func getXDistance(x1: CGFloat, x2: CGFloat) -> CGFloat
-    {
-        return abs(x1 - x2)
     }
     
     internal var data: ChartData?
