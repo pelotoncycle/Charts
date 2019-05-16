@@ -23,7 +23,7 @@ open class CombinedHighlighter: ChartHighlighter
         super.init(chart: chart)
         
         // if there is BarData, create a BarHighlighter
-        self.barHighlighter = barDataProvider.barData == nil ? nil : BarHighlighter(chart: barDataProvider, distanceCalculation: horizontalDistance)
+        self.barHighlighter = barDataProvider.barData == nil ? nil : BarHighlighter(chart: barDataProvider, distanceCalculation: Distance.horizontal)
     }
     
     open override func getHighlights(xValue: Double, x: CGFloat, y: CGFloat) -> [Highlight]

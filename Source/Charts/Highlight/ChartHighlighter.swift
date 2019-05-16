@@ -18,9 +18,9 @@ open class ChartHighlighter : NSObject, IHighlighter
     @objc open weak var chart: ChartDataProvider?
 
     /// For different `distanceCalculation` methods refer to `DistanceCalculation.swift`
-    let distanceCalculation: DistanceCalculation
+    let distanceCalculation: Distance.Calculation
     
-    @objc public init(chart: ChartDataProvider, distanceCalculation: @escaping DistanceCalculation = euclideanDistance)
+    @objc public init(chart: ChartDataProvider, distanceCalculation: @escaping Distance.Calculation = Distance.euclidean)
     {
         self.chart = chart
         self.distanceCalculation = distanceCalculation

@@ -31,7 +31,7 @@ open class HorizontalBarChartView: BarChartView
         rightYAxisRenderer = YAxisRendererHorizontalBarChart(viewPortHandler: _viewPortHandler, yAxis: rightAxis, transformer: _rightAxisTransformer)
         xAxisRenderer = XAxisRendererHorizontalBarChart(viewPortHandler: _viewPortHandler, xAxis: _xAxis, transformer: _leftAxisTransformer, chart: self)
         
-        self.highlighter = HorizontalBarHighlighter(chart: self, distanceCalculation: horizontalDistance)
+        self.highlighter = HorizontalBarHighlighter(chart: self, distanceCalculation: Distance.horizontal)
     }
     
     internal override func calculateLegendOffsets(offsetLeft: inout CGFloat, offsetTop: inout CGFloat, offsetRight: inout CGFloat, offsetBottom: inout CGFloat)

@@ -27,7 +27,7 @@ open class BarChartView: BarLineChartViewBase, BarChartDataProvider
         
         renderer = BarChartRenderer(dataProvider: self, animator: _animator, viewPortHandler: _viewPortHandler)
         
-        self.highlighter = BarHighlighter(chart: self, distanceCalculation: horizontalDistance)
+        self.highlighter = BarHighlighter(chart: self, distanceCalculation: Distance.horizontal)
         
         self.xAxis.spaceMin = 0.5
         self.xAxis.spaceMax = 0.5

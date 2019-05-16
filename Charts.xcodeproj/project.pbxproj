@@ -24,7 +24,7 @@
 		1311BEC21E9CC264E971EFAF /* ILineRadarChartDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F7E6A99D82E6AE3804D5A39 /* ILineRadarChartDataSet.swift */; };
 		135F11CE20425AF600D655A3 /* PieChartTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135F11CD20425AF600D655A3 /* PieChartTests.swift */; };
 		146EE16342C2BADC92E45BF2 /* ILineScatterCandleRadarChartDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9249AD9AEC8C85772365A128 /* ILineScatterCandleRadarChartDataSet.swift */; };
-		15325869228C6B5B003FB915 /* DistanceCalculation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15325868228C6B5A003FB915 /* DistanceCalculation.swift */; };
+		15325869228C6B5B003FB915 /* Distance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15325868228C6B5A003FB915 /* Distance.swift */; };
 		17E994DA88777AA1D8CCFC58 /* BarChartDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31AA65EA27776F8C653C7E8 /* BarChartDataSet.swift */; };
 		203A39685CC96FC625F616E4 /* IHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 998F2BFE318471AFC05B50AC /* IHighlighter.swift */; };
 		219192CA6B4895319AB49DCA /* BarLineScatterCandleBubbleRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B1C588E9DF6FFD56D7ADF8E /* BarLineScatterCandleBubbleRenderer.swift */; };
@@ -181,7 +181,7 @@
 		11EF1FE22549E885C8F40738 /* CombinedChartView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CombinedChartView.swift; path = Source/Charts/Charts/CombinedChartView.swift; sourceTree = "<group>"; };
 		12409C3EA15787C11AF0D2BC /* ChartDataEntryBase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ChartDataEntryBase.swift; path = Source/Charts/Data/Implementations/Standard/ChartDataEntryBase.swift; sourceTree = "<group>"; };
 		135F11CD20425AF600D655A3 /* PieChartTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PieChartTests.swift; path = Tests/Charts/PieChartTests.swift; sourceTree = "<group>"; };
-		15325868228C6B5A003FB915 /* DistanceCalculation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DistanceCalculation.swift; path = Source/Charts/Utils/DistanceCalculation.swift; sourceTree = "<group>"; };
+		15325868228C6B5A003FB915 /* Distance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Distance.swift; path = Source/Charts/Utils/Distance.swift; sourceTree = "<group>"; };
 		18462BFDD9DEE76D51D40503 /* ScatterChartView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScatterChartView.swift; path = Source/Charts/Charts/ScatterChartView.swift; sourceTree = "<group>"; };
 		18BFB0A14A5C47A302A597D9 /* ICandleChartDataSet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ICandleChartDataSet.swift; path = Source/Charts/Data/Interfaces/ICandleChartDataSet.swift; sourceTree = "<group>"; };
 		1C02C3AF5C92FCFC18224C35 /* XAxisRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = XAxisRenderer.swift; path = Source/Charts/Renderers/XAxisRenderer.swift; sourceTree = "<group>"; };
@@ -589,7 +589,7 @@
 				FF475B9593B9898853814340 /* Transformer.swift */,
 				324C9127B53A8D39C8B49277 /* TransformerHorizontalBarChart.swift */,
 				72EAEBB7CF73E33565FC2896 /* ViewPortHandler.swift */,
-				15325868228C6B5A003FB915 /* DistanceCalculation.swift */,
+				15325868228C6B5A003FB915 /* Distance.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -932,7 +932,7 @@
 				796D3E63A37A95FD9D1AB9A1 /* ChevronDownShapeRenderer.swift in Sources */,
 				F103D90FC5DEEA0D7BB4407E /* ChevronUpShapeRenderer.swift in Sources */,
 				B85DEB06B4C1AFFC8A0E3295 /* CircleShapeRenderer.swift in Sources */,
-				15325869228C6B5B003FB915 /* DistanceCalculation.swift in Sources */,
+				15325869228C6B5B003FB915 /* Distance.swift in Sources */,
 				0529DD51622C8769C1121F90 /* CrossShapeRenderer.swift in Sources */,
 				8A9FF54E2075A9047CC8E953 /* IShapeRenderer.swift in Sources */,
 				8EF7B3FBE37F72CC030CD865 /* SquareShapeRenderer.swift in Sources */,
