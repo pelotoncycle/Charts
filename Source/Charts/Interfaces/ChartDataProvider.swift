@@ -28,8 +28,6 @@ public protocol ChartDataProvider
     var chartYMax: Double { get }
     
     var maxHighlightDistance: CGFloat { get }
-
-    var useHighlightXDistance: Bool { get }
     
     var xRange: Double { get }
     

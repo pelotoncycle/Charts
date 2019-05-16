@@ -937,10 +937,6 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
     /// The maximum distance in screen pixels away from an entry causing it to highlight.
     /// **default**: 500.0
     open var maxHighlightDistance: CGFloat = 500.0
-
-    /// Only check distance between the x value of an entry (in screen pixels) causing it to highlight.
-    /// **default**: false
-    open var useHighlightXDistance: Bool = false
     
     /// the number of maximum visible drawn values on the chart only active when `drawValuesEnabled` is enabled
     open var maxVisibleCount: Int
