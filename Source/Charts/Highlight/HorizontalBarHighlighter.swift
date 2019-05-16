@@ -60,9 +60,4 @@ open class HorizontalBarHighlighter: BarHighlighter
         
         return highlights
     }
-    
-    internal override func getDistance(x1: CGFloat, y1: CGFloat, x2: CGFloat, y2: CGFloat) -> CGFloat
-    {
-        return abs(y1 - y2)
-    }
 }
