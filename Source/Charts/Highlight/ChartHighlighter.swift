@@ -31,6 +31,11 @@ open class ChartHighlighter : NSObject, IHighlighter
         let xVal = Double(getValsForTouch(x: x, y: y).x)
         return getHighlight(xValue: xVal, x: x, y: y)
     }
+
+    open func getHighlights(x: CGFloat, y: CGFloat) -> [Highlight]? {
+        let xVal = Double(getValsForTouch(x: x, y: y).x)
+        return getHighlights(xValue: xVal, x: x, y: y)
+    }
     
     /// - returns: The corresponding x-pos for a given touch-position in pixels.
     /// - parameter x:
