@@ -66,7 +66,7 @@ open class AxisBase: ComponentBase
     @objc open var blocksFillColor: CGColor = UIColor.white.cgColor
     @objc open var blocksStrokeColor: CGColor = UIColor.black.withAlphaComponent(0.1).cgColor
     @objc open var blockStrokeWidth: CGFloat = 0.5
-    @objc open var blockGradientColors: CFArray = [CGColor]() as CFArray
+    @objc open var blockGradientColors: CFArray = [UIColor.white.cgColor, UIColor.white.withAlphaComponent(0).cgColor] as CFArray
     /// Are the LimitLines drawn behind the data or in front of the data?
     /// 
     /// **default**: false

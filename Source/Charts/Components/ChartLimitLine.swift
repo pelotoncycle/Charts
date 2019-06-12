@@ -46,7 +46,7 @@ open class ChartLimitLine: ComponentBase
     @objc open var imageStickyLength = Double(0)
     @objc open var imageTint: UIColor? = nil
     /// Radial Gradient around limit line icons
-    @objc open var radialGradientColors: CFArray = [CGColor]() as CFArray
+    @objc open var radialGradientColors: CFArray = [UIColor.white.withAlphaComponent(0).cgColor, UIColor.white.cgColor] as CFArray
     @objc open var shouldRenderBlockGradient: Bool = true
 
     public override init()
