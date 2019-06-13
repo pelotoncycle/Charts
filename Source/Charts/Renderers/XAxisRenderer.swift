@@ -403,7 +403,7 @@ open class XAxisRenderer: AxisRendererBase
 
         let trans = transformer.valueToPixelMatrix
         let lineGap: CGFloat = 3.7
-        let lineWidth: CGFloat = 0.5
+        let lineWidth: CGFloat = xAxis.blockStrokeWidth
 
 
         let origin = CGPoint(x: CGFloat(start), y: 0).applying(trans)
@@ -411,7 +411,7 @@ open class XAxisRenderer: AxisRendererBase
         let size = CGSize(width: transformer.pixelForValues(x: length, y: 0).x - transformer.pixelForValues(x: 0, y: 0).x,
                           height: viewPortHandler.contentBottom - viewPortHandler.contentTop + xAxis.axisLineWidth)
 
-        context.setFillColor(UIColor.white.cgColor)
+        context.setFillColor(xAxis.blocksFillColor)
 
         let fillRect = CGRect(origin: CGPoint(x: origin.x, y: 0),
                               size: size)
@@ -440,7 +440,7 @@ open class XAxisRenderer: AxisRendererBase
             context.addLine(to: endPoint)
         }
 
-        context.setStrokeColor(UIColor.black.withAlphaComponent(0.1).cgColor)
+        context.setStrokeColor(xAxis.blocksStrokeColor)
         context.setLineWidth(lineWidth)
         context.strokePath()
 
@@ -455,7 +455,8 @@ open class XAxisRenderer: AxisRendererBase
     private func renderBlockGradient(context: CGContext, start: Double, length: Double) {
         guard
             let xAxis = self.axis as? XAxis,
-            let transformer = self.transformer
+            let transformer = self.transformer,
+            CFArrayGetCount(xAxis.blockGradientColors) > 0
             else { return }
 
         context.saveGState()
@@ -475,11 +476,10 @@ open class XAxisRenderer: AxisRendererBase
         let clipBound = intersection.size == .zero ? CGRect.zero : intersection
         context.clip(to: CGRect(origin: CGPoint(x: clipBound.origin.x - 1.5, y: clipBound.origin.y), size: CGSize(width: clipBound.width + 3, height: clipBound.height)))
 
-        let colors = [UIColor.white.cgColor, UIColor.white.withAlphaComponent(0).cgColor]
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let colorLocations: [CGFloat] = [0.0, 1.0]
         let gradient = CGGradient(colorsSpace: colorSpace,
-                                  colors: colors as CFArray,
+                                  colors: xAxis.blockGradientColors,
                                   locations: colorLocations)!
 
         let startPoint = CGPoint.zero
@@ -519,8 +519,9 @@ open class XAxisRenderer: AxisRendererBase
         }
         
         context.strokePath()
-        renderBlockGradient(context: context, start: limitLine.limit, length: 0)
-
+        if limitLine.shouldRenderBlockGradient {
+            renderBlockGradient(context: context, start: limitLine.limit, length: 0)
+        }
         guard let transformer = self.transformer,
             let image = limitLine.image else { return }
 
@@ -533,12 +534,41 @@ open class XAxisRenderer: AxisRendererBase
         xPosition = max(min(originX + insect.left, position.x + stickyLength - size.width - insect.right), position.x + insect.left)
         let rect = CGRect(x: xPosition, y: viewPortHandler.contentBottom - size.height - limitLine.imageInsect.bottom, width: size.width, height: size.height)
 
-        if let radialGradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: [UIColor.white.withAlphaComponent(0).cgColor, UIColor.white.cgColor] as CFArray, locations: [0, 1]) {
+        if let radialGradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: limitLine.radialGradientColors, locations: [0, 1]) {
             let center = CGPoint(x: rect.origin.x + size.width / 2, y: rect.origin.y + size.height / 2)
             context.drawRadialGradient(radialGradient, startCenter: center, startRadius: size.width / 2, endCenter: center, endRadius: 1, options: [])
         }
 
-        image.draw(in: rect)
+        if let tintColor = limitLine.imageTint {
+            tint(image: image, with: tintColor).draw(in: rect)
+        } else {
+            image.draw(in: rect)
+        }
+    }
+
+    // Adapted from: https://gist.github.com/iamjason/a0a92845094f5b210cf8
+    @objc private func tint(image: UIImage, with color: UIColor) -> UIImage {
+        UIGraphicsBeginImageContext(image.size)
+        guard let context = UIGraphicsGetCurrentContext() else { return image }
+        guard let cgImage = image.cgImage else { return image }
+
+        // flip the image
+        context.scaleBy(x: 1.0, y: -1.0)
+        context.translateBy(x: 0.0, y: -image.size.height)
+
+        // multiply blend mode
+        context.setBlendMode(.multiply)
+
+        let rect = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+        context.clip(to: rect, mask: cgImage)
+        color.setFill()
+        context.fill(rect)
+
+        // create uiimage
+        guard let tintedImage = UIGraphicsGetImageFromCurrentImageContext() else { return image }
+        UIGraphicsEndImageContext()
+
+        return tintedImage
     }
     
     @objc open func renderLimitLineLabel(context: CGContext, limitLine: ChartLimitLine, position: CGPoint, yOffset: CGFloat)
