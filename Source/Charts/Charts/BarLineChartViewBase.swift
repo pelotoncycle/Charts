@@ -86,6 +86,22 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     internal var _pinchGestureRecognizer: NSUIPinchGestureRecognizer!
     #endif
     internal var _panGestureRecognizer: NSUIPanGestureRecognizer!
+
+    public var panGestureRecognizer: NSUIPanGestureRecognizer {
+        get { return _panGestureRecognizer }
+    }
+
+    public var tapGestureRecognizer: NSUITapGestureRecognizer {
+        get { return _tapGestureRecognizer }
+    }
+
+    public var doubleTapGestureRecognizer: NSUITapGestureRecognizer {
+        get { return _doubleTapGestureRecognizer }
+    }
+
+    public var pinchGestureRecognizer: NSUIPinchGestureRecognizer {
+        get { return _pinchGestureRecognizer }
+    }
     
     /// flag that indicates if a custom viewport offset has been set
     private var _customViewPortEnabled = false
@@ -545,6 +561,20 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     private var _decelerationLastTime: TimeInterval = 0.0
     private var _decelerationDisplayLink: NSUIDisplayLink!
     private var _decelerationVelocity = CGPoint()
+
+    @objc public func addOutsideGestureRecognizer(recognizer: UIGestureRecognizer) {
+        if let panRecognizer = recognizer as? UIPanGestureRecognizer {
+            panRecognizer.addTarget(self, action: #selector(panGestureRecognized(_:)))
+        } else if let pinchRecognizer = recognizer as? UIPinchGestureRecognizer {
+            pinchRecognizer.addTarget(self, action: #selector(BarLineChartViewBase.pinchGestureRecognized(_:)))
+        } else if let doubleTapRecognizer = recognizer as? UITapGestureRecognizer, doubleTapRecognizer.numberOfTapsRequired == 2 {
+            doubleTapRecognizer.addTarget(self, action: #selector(doubleTapGestureRecognized(_:)))
+        } else if let tapRecognizer = recognizer as? UITapGestureRecognizer {
+            tapRecognizer.addTarget(self, action: #selector(tapGestureRecognized(_:)))
+        } else {
+            return
+        }
+    }
     
     @objc private func tapGestureRecognized(_ recognizer: NSUITapGestureRecognizer)
     {
