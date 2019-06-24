@@ -562,7 +562,7 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     private var _decelerationDisplayLink: NSUIDisplayLink!
     private var _decelerationVelocity = CGPoint()
 
-    @objc public func addOutsideGestureRecognizer(recognizer: UIGestureRecognizer) {
+    @objc public func addAdditionalGestureRecognizer(recognizer: UIGestureRecognizer) {
         if let panRecognizer = recognizer as? UIPanGestureRecognizer
         {
             panRecognizer.addTarget(self, action: #selector(panGestureRecognized(_:)))
@@ -582,8 +582,9 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         }
         else
         {
-            return
+           return
         }
+        self.addGestureRecognizer(recognizer)
     }
     
     @objc private func tapGestureRecognized(_ recognizer: NSUITapGestureRecognizer)
